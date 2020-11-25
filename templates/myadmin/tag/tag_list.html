@@ -1,0 +1,16 @@
+{% extends 'myadmin/base/obj_list.html' %}
+
+{% block table_content %}
+    <tr>
+        <th>#</th>
+        <th>标签名</th>
+        <th>是否可用</th>
+    </tr>
+    {% for obj in page %}
+        <tr>
+            <td style="width: 40px;" data-url="{% url 'myadmin:news_tag_update' obj.id %}"><a href="#">{{ forloop.counter }}</a></td>
+            <td>{{ obj.name }}</td>
+            <td>{% if obj.is_deleted %}否{% else %}是{% endif %}</td>
+        </tr>
+    {% endfor %}
+{% endblock table_content %}

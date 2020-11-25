@@ -1,0 +1,51 @@
+{% load static %}
+{% load admin_customer_tags %}
+
+<!-- 模态框内容 -->
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <h4 class="modal-title">添加菜单</h4>
+</div>
+
+<div class="modal-body">
+    <form action="" class="form-horizontal" id="add-menu">
+        {% csrf_token %}
+        <div class="box-body">
+    {#        拿到后端的form字段 #}
+    {#        {{ form.as_p }}#}
+            {% for field in form %}
+                {% if field.name == 'is_visible' %}
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label for="{{ field.id_for_label }}">{{ field }}{{ field.label }}</label>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+                        <div class="col-sm-10">
+                            {% for error in field.errors %}
+                                <label class="control-label" for="{{ field.id_for_label }}">{{ error }}</label>
+                            {% endfor %}
+        {#                用自定义filter修改表单样式 #}
+        {#                    {{ field }}#}
+                            {% add_class field 'form-control' %}        <!-- 该filter 传入field, class 给field添加class -->
+                        </div>
+
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+    <button type="button" class="btn btn-primary add">添加</button>
+</div>
+
+<script src="{% static 'js/myadmin/menu/add_menu.js' %}"></script>

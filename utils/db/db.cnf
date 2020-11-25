@@ -1,0 +1,7 @@
+[client]
+database = tzproject
+user = pzcat
+password = admin
+host = 192.168.222.131
+port = 3306
+default-character-set = utf8

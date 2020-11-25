@@ -1,0 +1,84 @@
+{% load news_template_filters %}
+{% load admin_customer_tags %}
+{% load admin_customer_filters %}
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ page_header }}
+        <small>{{ page_option }}</small>
+      </h1>
+
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+        <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{ table_title }}</h3>
+        </div>
+        <!-- /.box-header -->
+
+        <div class="box-body">
+            <!-- 筛选项表单 -->
+
+
+        <!-- form start -->
+        <div class="box-body">
+            <form action="" class="form-horizontal">
+                {% csrf_token %}
+            {% block form_content %}
+                {% for field in form %}
+                    {% if field|is_checkbox %}
+                        <div class="form-group">
+                            <div class="col-sm-offset-1 col-sm-11">
+                                <div class="checkbox">
+                                    <label for="{{ field.id_for_label }}">{{ field }}{{ field.label }}</label>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif field|is_url_field %}
+                        <div class="form-group {% if field.errors %}has-error{% endif %}">
+                            <label for="{{ field.id_for_label }}" class="col-sm-1 control-label">{{ field.label }}</label>
+                            <div class="col-sm-11">
+                                {% for error in field.errors %}
+                                    <label for="{{ field.id_for_label }}" class="control-label">{{ error }}</label>
+                                {% endfor %}
+                                <div class="input-group">
+                                    {% add_class field 'form-control' %}
+                                    <span class="input-group-btn">
+                                        <input type="file" class="hidden">
+                                        <button type="button" class="btn btn-info btn-flat">上传文件</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endblock form_content %}
+            </form>
+        </div>
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="button" class="btn btn-default back">返回</button>
+            <button type="button" class="btn btn-primary pull-right save"
+                    {% if form.instance.id %}
+                    data-url="{% block update_url %}{% endblock update_url %}"
+                    data-type="PUT"
+                    {% else %}
+                    data-url="{% block add_url %}{% endblock add_url %}"
+                    data-type="POST"
+                    {% endif %}
+                    >保存</button>
+        </div>
+
+        </div>
+    </div>
+
+    </section>
+    <!-- /.content -->
+
+{% block script %}
+{% endblock script %}

@@ -1,0 +1,190 @@
+{% load news_template_filters %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{ page_header }}
+        <small>{{ page_option }}</small>
+      </h1>
+
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+        <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">{{ table_title }}</h3>
+            <div class="box-tools">
+                <!-- 添加按钮 -->
+                {% block add_button %} {% endblock add_button %}
+            </div>
+        </div>
+        <!-- /.box-header -->
+
+        <div class="box-body">
+            <!-- 筛选项表单 -->
+            {% block search_form %}{% endblock %}
+
+            <table class="table table-border">
+                <tbody>
+                {% block table_content %} {% endblock table_content %}
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            {% if page.paginator %}
+            <div class="box-footer clearfix">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
+                            总共：{{ page.paginator.count }}条 第{{ page.start_index }}到{{ page.end_index }}条
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="pagination pagination-sm nomargin pull-right">
+                            <li {% if not page.has_previous %} class="disabled" {% endif %} data-page="{{ page.number|add:-1 }}">
+                                <a href="#">《</a></li>
+                        {% for n in page|page_bar %}
+                            <li {% if n == page.number %}class="active"{% endif %} data-page="{{ n }}"><a href="#">{{ n }}</a></li>
+                        {% endfor %}
+                            <li {% if not page.has_next %} class="disabled" {% endif %} data-page="{{ page.number|add:1 }}">
+                                <a href="#">》</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    </section>
+    <!-- /.content -->
+
+{% block script %}
+    <script>
+        $(()=>{
+            {% block query_script %}
+                let $queryForm = $('form.user-query');                   // 查询表单
+                let $queryBtn = $('form.user-query button.query');       // 查询按钮
+                let $resetBtn = $('form.user-query button.reset');       // 重置按钮
+
+                // 查询
+                $queryBtn.click(()=>{
+                    let url = $('.sidebar-menu li.active a').data('url');
+                    if(!url){
+                        return
+                    }
+                    $
+                        .ajax({
+                            url: url,
+                            data: $queryForm.serialize(),
+                            type: 'GET'
+                        })
+                        .done((res)=>{
+                            $('#content').html(res)
+                        })
+                        .fail(()=>{
+                            message.showError('服务器超时，请重试！')
+                        })
+                });
+
+                // 重置
+                $resetBtn.click(()=>{
+                    $queryForm[0].reset();
+                    let url = $('.sidebar-menu li.active a').data('url');
+                    if (!url) {
+                        return
+                    }
+                    $
+                        .ajax({
+                            url: url,
+                            data: $queryForm.serialize(),
+                            type: 'GET'
+                        })
+                        .done((res)=>{
+                            $('#content').html(res)
+                        })
+                        .fail(()=>{
+                            message.showError('服务器超时，请重试！')
+                        })
+                });
+            {% endblock query_script %}
+
+            // 分页
+            let $pageLi = $('ul.pagination li').not('active').not('disabled');
+            $pageLi.click(function(){
+                let $this = $(this);
+                $
+                    .ajax({
+                        url: $('.sidebar-menu li.active a').data('url'),
+                        data: $queryForm.serialize() + '&page=' + $this.data('page'),
+                        type: 'GET'
+                    })
+                    .done((res)=>{
+                        $('#content').html(res)
+                    })
+                    .fail(()=>{
+                        message.showError('服务器超时，请重试！')
+                    })
+            });
+
+            // 实例详情
+            $('tr').each(function(){
+                $(this).children('td:first').click(function(){
+                    let url = $(this).data('url');
+                    if (!url){
+                        return
+                    }
+                    $
+                        .ajax({
+                            url: url,
+                            type: 'GET'
+                        })
+                        .done((res)=>{
+                            if (res.errno === '4105'){
+                                message.showError(res.errmsg)
+                            }else if (res.errno === '4101'){
+                                message.showError(res.errmsg);
+                                setTimeout(()=>{
+                                    window.location.href = res.data.url
+                                }, 1000)
+                            }else {
+                                $('#content').html(res)
+                            }
+                        })
+                        .fail(()=>{
+                            message.showError('服务器超时，请重试！')
+                        })
+                })
+            });
+
+            // 添加实例
+            $('.box-tools button').click(function(){
+                let url = $(this).data('url');
+                if (!url){
+                    return
+                }
+                $
+                    .ajax({
+                        url: url,
+                        type: 'GET'
+                    })
+                    .done((res)=>{
+                        if (res.errno === '4105'){
+                            message.showError(res.errmsg)
+                        }else if (res.errno === '4101'){
+                            message.showError(res.errmsg);
+                            setTimeout(()=>{
+                                window.location.href = res.data.url
+                            }, 1000)
+                        }else {
+                            $('#content').html(res)
+                        }
+                    })
+                    .fail(()=>{
+                        message.showError('服务器超时，请重试！')
+                    })
+            });
+        });
+    </script>
+{% endblock script %}

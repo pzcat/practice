@@ -1,0 +1,79 @@
+{% extends 'myadmin/base/content_base.html' %}
+{% load static %}
+{% load admin_customer_tags %}
+
+{% block page_header %}新闻管理{% endblock %}
+{% block page_option %}新闻编辑{% endblock %}
+
+{% block content %}
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">新闻详情</h3>
+        </div>
+        <!-- /.box-header -->
+
+        <!-- form start -->
+        <div class="box-body">
+            <form action="" class="form-horizontal">
+                {% csrf_token %}
+                {% for field in form %}
+                    {% if field.name == 'is_deleted' %}
+                        <div class="form-group">
+                            <div class="col-sm-offset-1 col-sm-11">
+                                <div class="checkbox">
+                                    <label for="{{ field.id_for_label }}">{{ field }}{{ field.label }}</label>
+                                </div>
+                            </div>
+                        </div>
+                    {% elif field.name == 'image_url' %}
+                        <div class="form-group" {% if field.errors %}has-error{% endif %}>
+                            <label for="{{ field.id_for_label }}" class="col-sm-1 control-label">{{ field.label }}</label>
+                            <div class="col-sm-11">
+                                <div class="input-group">
+                                    {% for error in field.errors %}
+                                        <label for="{{ field.id_for_label }}" class="control-label">{{ error }}</label>
+                                    {% endfor %}
+                                    {% add_class field 'form-control' %}
+                                    <span class="input-group-btn">
+                                        <input type="file" class="hidden">
+                                        <button class="btn btn-info btn-flat" type="button">上传图片</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group" {% if field.errors %}has-error{% endif %}>
+                            <label for="{{ field.id_for_label }}" class="col-sm-1 control-label">{{ field.label }}</label>
+                            <div class="col-sm-11">
+                                {% for error in field.errors %}
+                                    <label for="{{ field.id_for_label }}" class="control-label">{{ field.label }}</label>
+                                {% endfor %}
+                                {% add_class field 'form-control' %}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                {{ form.media }}
+            </form>
+        </div>
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="button" class="btn btn-default back">返回</button>
+            <button type="button" class="btn btn-primary pull-right save"
+                    {% if form.instance.id %}
+                    data-url="{% url 'myadmin:news_update' form.instance.id %}"
+                    data-type="PUT"
+                    {% else %}
+                    data-url="{% url 'myadmin:news_add' %}"
+                    data-type="POST"
+                    {% endif %}
+                    >保存</button>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script src="{% static 'js/myadmin/news/news_detail.js' %}"></script>
+{% endblock %}

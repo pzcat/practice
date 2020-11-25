@@ -1,0 +1,22 @@
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {% block page_header %}{% endblock page_header %}
+        <small>{% block page_option %}{% endblock page_option %}</small>
+      </h1>
+
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+    {% block content %}
+
+    {% endblock content %}
+
+    </section>
+    <!-- /.content -->
+
+{% block script %}
+{% endblock script %}

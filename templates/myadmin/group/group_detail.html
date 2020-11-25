@@ -1,0 +1,87 @@
+{% extends 'myadmin/base/content_base.html' %}
+{% load static %}
+{% load admin_customer_tags %}
+
+{% block page_header %}系统设置{% endblock page_header %}
+
+{% block page_option %}权限分组{% endblock page_option %}
+
+{% block content %}
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">分组详情</h3>
+        </div>
+        <!-- /.box-header -->
+
+        <!-- form start -->
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <form action="" class="form-horizental">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            {% if field.name == 'permissions' %}
+                                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                                    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+                                    <div class="col-sm-10">
+                                        {% for error in field.errors %}
+                                            <label for="{{ field.id_for_label }}" class="control-label">{{ error }}</label>
+                                        {% endfor %}
+                                        {% for menu in menus %}
+                                            <div class="row" style="margin:0">
+                                                <div class="checkbox one">
+                                                    <label for="menu_{{ menu.permission.id }}">
+                                                        <input type="checkbox" {% if menu.permission in permissions %}checked{% endif %} name="permissions" id="menu_{{ menu.permission.id }}" value="{{ menu.permission.id }}">
+                                                        {{ menu.name }}
+                                                    </label>
+                                                </div>
+                                                {% for child in menu.children.all %}
+                                                    <div class="checkbox col-sm-offset-1 two">
+                                                        <label for="menu_{{ child.permission.id }}">
+                                                            <input type="checkbox" {% if child.permission in permissions %}checked{% endif %} name="permissions" id="menu_{{ child.permission.id }}" value="{{ child.permission.id }}">
+                                                            {{ child.name }}
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="form-group {% if field.errors %}has-error{% endif %}">
+                                    <label for="{{ field.id_for_label }}" class="col-sm-2 control-label">{{ field.label }}</label>
+                                    <div class="col-sm-10">
+                                        {% for error in field.errors %}
+                                            <label for="{{ field.id_for_label }}" class="control-label">error</label>
+                                        {% endfor %}
+                                        {% add_class field 'form-control' %}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /.box-body -->
+
+        <div class="box-footer">
+            <button type="button" class="btn btn-default back">返回</button>
+        <!-- update和add视图同用这个模板，需要判断url -->
+            <button type="button" class="btn btn-primary pull-right save"
+                    {% if form.instance.id %}
+                        data-url="{% url 'myadmin:group_update' form.instance.id %}" data-type="PUT"
+                    {% else %}
+                        data-url="{% url 'myadmin:group_add' %}" data-type="POST"
+                    {% endif %}
+            >保存</button>
+        </div>
+
+    </div>
+
+{% endblock content %}
+
+{% block script %}
+    <script src="{% static 'js/myadmin/group/group_detail.js' %}"></script>
+{% endblock script %}

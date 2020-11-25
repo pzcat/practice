@@ -1,0 +1,165 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}新闻详情页{% endblock title %}
+
+{% block link %}
+    <link rel="stylesheet" href="{% static 'css/news/news-detail.css' %}">
+{% endblock link %}
+
+{% block main %}
+    <main id="main">
+        <div class="w1200 clearfix">
+            <!-- news-contain start  -->
+            <div class="news-contain">
+              <h1 class="news-title">{{ news.title }}</h1>
+              <div class="news-info">
+                <div class="news-info-left">
+                  <span class="news-author">{{ news.author.username }}</span>
+                  <span class="news-pub-time">{{ news.update_time }}</span>
+                  <span class="news-type">{{ news.tag.name }}</span>
+                </div>
+              </div>
+              <article class="news-content">
+                {{ news.content|safe }}                        <!-- safe 允许渲染 -->
+              </article>
+              <div class="comment-contain">
+            <div class="comment-pub clearfix">
+                <div class="new-comment">
+                    文章评论(<span class="comment-count">0</span>)
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="comment-control logged-comment" news-id="{{ news.id }}">
+                        <input type="text" placeholder="请填写评论">
+                    </div>
+                {% else %}
+                    <div class="comment-control please-login-comment" >
+                        <input type="text" placeholder="请登录后参加评论" readonly>
+                    </div>
+                {% endif %}
+
+
+                <button class="comment-btn">发表评论</button>
+            </div>
+            <ul class="comment-list">
+                {% for comment in comments %}
+                    <li class="comment-item">
+                        <div class="comment-info clearfix">
+                            <img src="/static/images/avatar.jpeg" alt="avatar" class="comment-avatar">
+                            <span class="comment-user">{{ comment.author.username }}</span>
+                            <span class="comment-pub-time">{{ comment.update_time }}</span>
+                        </div>
+                        <div class="comment-content">{{ comment.content }}</div>
+
+                        {% if comment.parent %}
+                            <div class="parent_comment_text">
+                                <div class="parent_username">{{ comment.parent.author }}</div>
+                                <div class="comment_time">{{ comment.parent.update_time }}</div>
+
+                                <div class="parent_content_text">
+                                    {{ comment.parent.content }}
+                                </div>
+
+                            </div>
+                        {% endif %}
+
+                        <a href="javascript:void(0);" class="reply_a_tag right_float">回复</a>
+                        <form class="reply_form left_float" comment-id="{{ comment.id }}"
+                              news-id="{{ comment.news_id }}">
+                            <textarea class="reply_input"></textarea>
+                            <input type="button" value="回复" class="reply_btn right_float">
+                            <input type="reset" name="" value="取消" class="reply_cancel right_float">
+                        </form>
+
+                    </li>
+                {% endfor comments %}
+
+            </ul>
+        </div>
+
+            </div>
+            <!-- news-contain end  -->
+
+            <!-- side start -->
+              <aside class="side">
+                  <div class="side-activities">
+                      <h3 class="activities-title">在线课堂<a href="javascript:void(0)">更多</a></h3>
+                      <div class="activities-img">
+                          <a href="javascript:void(0);" target="_blank">
+                              <img src="../images/english.jpg" alt="title">
+                          </a>
+                          <p class="activities-tips">对话国外小姐姐</p>
+                      </div>
+                      <ul class="activities-list">
+                          <li>
+                              <a href="javascript:void(0);" target="_blank">
+                                  <span class="active-status active-start">报名中</span>
+                                  <span class="active-title"><a
+                                          href="https://www.shiguangkey.com/course/2432"> Django 项目班</a></span>
+                              </a>
+                          </li>
+                          <li>
+                              <a href="javascript:void(0);" target="_blank">
+                                  <span class="active-status active-end">已结束</span>
+                                  <span class="active-title"><a
+                                          href="https://www.shiguangkey.com/course/2321">Python入门基础班</a></span>
+                              </a>
+                          </li>
+                      </ul>
+                  </div>
+                  <div class="side-attention clearfix">
+                      <h3 class="attention-title">关注我</h3>
+                      <ul class="side-attention-address">
+                          <li>
+                              <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-GitHub"></i>XinLan</a>
+                          </li>
+                          <li>
+                              <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-zhihu"
+                                                                               style="color:rgb(0, 108, 226);"></i>XinLan</a>
+                          </li>
+                          <li>
+                              <a href="javascript:void(0);" target="_blank"><i class="PyWhich py-weibo"
+                                                                               style="color:rgb(245,92,110);"></i>XinLan</a>
+                          </li>
+                      </ul>
+                      <div class="side-attention-qr">
+                          <p>扫码关注</p>
+                      </div>
+                  </div>
+
+                  <div class="side-hot-recommend">
+                      <h3 class="hot-recommend">热门推荐</h3>
+                      <ul class="hot-news-list">
+
+                          <li>
+                              <a href="javascript:void(0)" class="hot-news-contain clearfix">
+                                  <div class="hot-news-thumbnail">
+                                      <img src="../images/python_web.jpg"
+                                           alt="">
+                                  </div>
+                                  <div class="hot-news-content">
+                                      <p class="hot-news-title">Django调试工具django-debug-toolbar安装使用教程</p>
+                                      <div class="hot-news-other clearfix">
+                                          <span class="news-type">python框架</span>
+                                          <!-- 自带的 -->
+                                          <time class="news-pub-time">11月11日</time>
+                                          <span class="news-author">python</span>
+                                      </div>
+                                  </div>
+                              </a>
+                          </li>
+
+                      </ul>
+                  </div>
+
+
+              </aside>
+            <!-- side end -->
+        </div>
+    </main>
+{% endblock main %}
+
+{% block script %}
+    <script src="{% static 'js/news/news_detail.js' %}"></script>
+{% endblock script %}
+

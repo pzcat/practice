@@ -1,0 +1,96 @@
+{% extends 'myadmin/base/content_base.html' %}
+{% load static %}
+{% load news_template_filters %}
+
+{% block page_header %}系统设置{% endblock page_header %}
+
+{% block page_option %}新闻管理{% endblock page_option %}
+
+{% block content %}
+    <div class="box">
+        <div class="box-header with-border">
+            <h3 class="box-title">新闻列表</h3>
+            <div class="box-tools">
+                <button type="button" class="btn btn-primary btn-sm" data-url="{% url 'myadmin:news_add' %}">添加新闻</button>
+            </div>
+        </div>
+        <!-- /.box-header -->
+    
+        <div class="box-body">
+            <div style="margin-bottom: 10px;">
+                <form action="" class="form-inline user-query">
+                    <div class="form-group">
+                        <label for="">标题</label>
+                        <input type="text" name="title" id="" class="form-control" value="{{ title }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="">分类</label>
+                        <select name="tag" id="" class="form-control">
+                            <option value="">所有</option>
+                            {% for tag in tags %}
+                                <option {% if tag_id == tag.id %}selected{% endif %} value="{{ tag.id }}">{{ tag.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="">是否可用</label>
+                        <select name="is_deleted" id="" class="form-control">
+                            <option value="2">所有</option>
+                            <option {% if is_deleted is False %}selected{% endif %} value="1">是</option>
+                            <option {% if is_deleted is True %}selected{% endif %} value="0">否</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-info query">查询</button>
+                    <button type="button" class="btn btn-default reset">重置</button>
+                </form>
+            </div>
+
+            <table class="table table-border">
+                <tbody>
+                    <tr>
+                        <th>#</th>
+                        <th>标题</th>
+                        <th>类型</th>
+                        <th>作者</th>
+                        <th>是否可用</th>
+                    </tr>
+                {% for news in news_list %}
+                    <tr>
+                        <td style="width: 40px;" data-url="{% url 'myadmin:news_update' news.id %}"><a href="#">{{ forloop.counter }}</a></td>
+                        <td>{{ news.title }}</td>
+                        <td>{{ news.tag.name }}</td>
+                        <td>{{ news.author.username }}</td>
+                        <td>{% if news.is_deleted %}否{% else %}是{% endif %}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 分页 -->
+            <div class="box-footer clearfix">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="dataTables_info" id="example2_info" role="status" aria-live="polite">
+                            总共：{{ news_list.paginator.count }}条 第{{ news_list.start_index }}到{{ news_list.end_index }}条
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="pagination pagination-sm nomargin pull-right">
+                            <li {% if not news_list.has_previous %} class="disabled" {% endif %} data-page="{{ news_list.number|add:-1 }}">
+                                <a href="#">《</a></li>
+                        {% for n in news_list|page_bar %}
+                            <li {% if n == news_list.number %}class="active"{% endif %} data-page="{{ n }}"><a href="#">{{ n }}</a></li>
+                        {% endfor %}
+                            <li {% if not news_list.has_next %} class="disabled" {% endif %} data-page="{{ news_list.number|add:1 }}">
+                                <a href="#">》</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script src="{% static 'js/myadmin/news/news_list.js' %}"></script>
+{% endblock script %}
